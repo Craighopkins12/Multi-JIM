@@ -1,6 +1,8 @@
 #!/bin/bash
 # Purpose: Create multiple JIM instances to support different domains on a single JIM host.
 
+### See end of script for license/copy-write/liability.
+
 # How does it work?
 #  
 # JIM is just a java app. You can run more than one copy, each with its own configuration.
@@ -232,5 +234,25 @@ logdir="/var/log"
  chown -R "$JSAM_USER_COLON_GROUP" "/usr/share/jamf-im${domain}/bundles" || exit $?
  chown -R "$JSAM_USER_COLON_GROUP" "/etc/jamf-im${domain}" || exit $?
 done
+
+
+# Copyright/Jamf
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this
+# software and associated documentation files (the "Software"), to deal in the Software
+# without restriction, including without limitation the rights to use, copy, modify, merge,
+# publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+# to whom the Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all copies or
+# substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+# INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+# PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+# FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+# OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+
 
 
