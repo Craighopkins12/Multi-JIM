@@ -151,7 +151,7 @@ logdir="/var/log"
  sed -i'' "s|jamf-im|jamf-im${domain}|g" "/etc/init.d/jamf-im${domain}"
  # Deamon script name should be put back the way it was...
  sed -i'' "s|jamf-im${domain}d.sh|jamf-imd.sh|g" "/etc/init.d/jamf-im${domain}"
- sed -i'' "s|--user jamfservice|--user ${JSAM_USER}|g" "/etc/init.d/jamf-im${domain}"
+ sed -i'' "s|--user \"jamfservice\"|--user ${JSAM_USER}|g" "/etc/init.d/jamf-im${domain}"
  # VERIFY: nano "/etc/init.d/jamf-im${domain}"
 
 
