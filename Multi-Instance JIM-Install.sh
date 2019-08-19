@@ -58,7 +58,7 @@ declare -a domain_a=('_dc1' '_dc2');
 
 sourceDir="$HOME/jim"
 mkdir "${sourceDir}"
-(cd "${sourceDir}" && rpm2cpio /root/jamf-im-1.1.0-1.noarch.rpm | cpio -idmv)
+(cd "${sourceDir}" && rpm2cpio /root/jamf-im-1.3.1-1.noarch.rpm | cpio -idmv)
 
 # You now have this folder structure in your user folder.
 # /$HOME/jim/
@@ -180,14 +180,67 @@ logdir="/var/log"
 
 #### STEP 3:
  #### Change the logging output patterns so we can tell which instance logged which message...
- sed -i'' "s|%d |%d [${domain}] |g" "/etc/jamf-im${domain}/jsam/logging/log4j2-jamf-im-launcher.xml"
+# sed -i'' "s|%d |%d [${domain}] |g" "/etc/jamf-im${domain}/jsam/logging/log4j2-jamf-im-launcher.xml"
  sed -i'' "s|.SSS} |.SSS} [${domain}] |g" "/etc/jamf-im${domain}/jsam/logging/log4j2-jamf-im-pre-enroll-stderr.xml"
- sed -i'' "s|%d |%d [${domain}] |g" "/etc/jamf-im${domain}/jsam/logging/log4j2-jamf-im-pre-enroll.xml"
- sed -i'' "s|%d |%d [${domain}] |g" "/etc/jamf-im${domain}/jsam/logging/log4j2-jamf-im.xml"
+# sed -i'' "s|%d |%d [${domain}] |g" "/etc/jamf-im${domain}/jsam/logging/log4j2-jamf-im-pre-enroll.xml"
+# sed -i'' "s|%d |%d [${domain}] |g" "/etc/jamf-im${domain}/jsam/logging/log4j2-jamf-im.xml"
 # This is the wrong approach. ^^^ would be easier to just give each instance it's own logs folder. 
 # See here: 
 # Should do it like this...
 # https://derflounder.wordpress.com/2017/11/04/implementing-log-rotation-for-the-jamf-infrastructure-manager-logs-on-red-hat-enterprise-linux/
+### Give New Domain its own log location
+ sed -i'' "s|jamf-im.log|jamf-im${domain}.log|g" "/etc/jamf-im${domain}/jsam/logging/log4j2-jamf-im.xml"
+ sed -i'' "s|jamf-im-launcher.log|jamf-im-launcher${domain}.log|g" "/etc/jamf-im${domain}/jsam/logging/log4j2-jamf-im-launcher.xml"
+ sed -i'' "s|jamf-im-pre-enroll.log|jamf-im-pre-enroll${domain}.log|g" "/etc/jamf-im${domain}/jsam/logging/log4j2-jamf-im-pre-enroll.xml"
+ 
+### Create New Log files and set permissions
+ touch /var/log/jamf-im${domain}.log
+ touch /var/log/jamf-im-launcher${domain}.log
+ touch /var/log/jamf-im-pre-enroll${domain}.log
+ chgrp jamfservice /var/log/jamf-im*
+ chmod 664 /var/log/jamf-im*
+ 
+ 
+ 
+### Configure Log Rotation
+ 
+ if [[ -f /etc/logrotate.conf ]]; then
+
+# Back up existing /etc/logrotate.conf
+
+cp /etc/logrotate.conf /etc/logrotate_conf_$(date +"%Y%m%d%H%M%S").bak
+
+cat > /etc/logrotate.d/jamf-im${domain} <<JIMLogRotation
+/var/log/jamf-im-launcher${domain}.log {
+        missingok
+        daily
+        copytruncate
+        create 700 jamfservice jamfservice
+        dateext
+        rotate 4
+        compress
+}
+/var/log/jamf-im${domain}.log {
+        missingok
+        daily
+        copytruncate
+        create 700 jamfservice jamfservice
+        dateext
+        rotate 4
+        compress
+}
+/var/log/jamf-im-pre-enroll${domain}.log {
+        missingok
+        daily
+        copytruncate
+        create 700 jamfservice jamfservice
+        dateext
+        rotate 4
+        compress
+}
+JIMLogRotation
+
+fi
 
 
 #### STEP 4:
